@@ -47,25 +47,19 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://anish-kushwaha.github.io",  # GitHub Pages
-        "https://noesis-psi.vercel.app",     # Vercel frontend (if needed)
-        "http://localhost:3000",             # Local development
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "*"  # Remove in production for security
+        "https://noesis-psi.vercel.app",
+        "https://anish-kushwaha.github.io"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=["*"],
-    expose_headers=["*"]
+    allow_headers=["*"]
 )
 
 # Root endpoint
 @app.get("/")
 async def root():
     return {
-        "message": "🌌 Welcome to Noesis API",
+        "message": "🌌 Welcome to Noesis",
         "description": "Personal Knowledge Operating System",
         "version": "2.0.0",
         "status": "operational",
