@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOESIS · knowledge operating system</title>
+  <!-- PREMIUM · DEEP · GRAPHIC · SCIENTIFIC -->
+  <meta name="description" content="Noesis is a personal operating system for thinking – where ideas become networks, contradictions are signals, and clarity is the only metric.">
+  <meta name="author" content="Anish kushwaha">
+  <!-- premium sans-serif -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- PREMIUM DARK THEME · GOLD ACCENTS · LAYERED GRAPHICS ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0C0F14;  /* deep base */
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 170, 100, 0.05) 0px, transparent 20%),
+        radial-gradient(circle at 90% 70%, rgba(180, 150, 80, 0.04) 0px, transparent 25%),
+        linear-gradient(145deg, rgba(20, 25, 33, 0.3) 0%, rgba(8, 10, 14, 0.8) 100%),
+        repeating-linear-gradient(45deg, rgba(200, 180, 120, 0.02) 0px, rgba(200, 180, 120, 0.02) 1px, 
+                                  transparent 1px, transparent 12px);
+      color: #F0F3F7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 350;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2.2rem 1.8rem;
+    }
+
+    /* subtle glowing orbs */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -10vh;
+      left: -10vw;
+      width: 50vw;
+      height: 50vh;
+      background: radial-gradient(circle at center, rgba(200, 175, 100, 0.08), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -10vh;
+      right: -10vw;
+      width: 60vw;
+      height: 60vh;
+      background: radial-gradient(circle at center, rgba(140, 170, 200, 0.05), transparent 75%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-container {
+      max-width: 1280px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(2px);
+    }
+
+    /* ---------- HEADER – NOESIS IDENTITY, GRADIENT GOLD, ULTRA PREMIUM ---------- */
+    .identity-header {
+      text-align: center;
+      margin-bottom: 2.9rem;
+      position: relative;
+    }
+
+    .identity-header h1 {
+      font-size: 4.5rem;
+      font-weight: 650;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3E9D2 60%, #D4B48C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.2rem;
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(212, 180, 140, 0.3);
+      animation: fadeGlow 2s ease-out;
+    }
+
+    @keyframes fadeGlow {
+      0% { opacity: 0.8; text-shadow: 0 0 0 rgba(212,180,140,0); }
+      100% { opacity: 1; text-shadow: 0 2px 20px rgba(212,180,140,0.3); }
+    }
+
+    .os-tagline {
+      font-size: 1.0rem;
+      font-weight: 280;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #D8C9AA;
+      background: rgba(12, 16, 22, 0.6);
+      display: inline-block;
+      padding: 0.4rem 1.8rem;
+      border: 1px solid rgba(212, 180, 140, 0.3);
+      backdrop-filter: blur(4px);
+      margin-top: 0.2rem;
+      border-radius: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    /* ---------- NAVIGATION – GOLD DETAIL, RAISED ---------- */
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem 2.4rem;
+      padding: 1.2rem 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.25);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      margin-bottom: 3rem;
+      background: rgba(8, 10, 14, 0.35);
+      backdrop-filter: blur(8px);
+      border-radius: 2px;
+    }
+
+    .nav-bottom {
+      margin-top: 4rem;
+      margin-bottom: 0.8rem;
+      border-top: 1px solid rgba(212, 180, 140, 0.18);
+      border-bottom: none;
+      padding-top: 1.2rem;
+      padding-bottom: 0.4rem;
+      background: transparent;
+      backdrop-filter: none;
+    }
+
+    nav a {
+      color: #E7DFD1;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 550;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 0.4rem 0.2rem;
+      border-bottom: 1.5px solid transparent;
+      transition: border-bottom 0.25s ease, color 0.2s, text-shadow 0.2s;
+      position: relative;
+    }
+
+    .nav-bottom a {
+      font-size: 0.75rem;
+      letter-spacing: 2.5px;
+      font-weight: 500;
+      color: #C9BCA5;
+    }
+
+    nav a:hover {
+      color: #FFF9EC;
+      border-bottom: 1.5px solid #D8B78C;
+      text-shadow: 0 0 6px rgba(216, 183, 140, 0.5);
+    }
+
+    nav a[href="index.html"] {
+      color: #FFFAF0;
+      border-bottom: 1.5px solid #C8A87C;
+    }
+
+    /* ---------- MAIN – SECTIONS WITH DEPTH, CARDS, GRAPHICS ---------- */
+    main {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5rem;
+    }
+
+    /* section headings – gold underline, distinctive */
+    section h2 {
+      font-weight: 550;
+      font-size: 1.9rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #F2E6D5;
+      border-bottom: 2px solid #B89A70;
+      padding-bottom: 0.6rem;
+      margin-bottom: 2.2rem;
+      display: inline-block;
+      background: linear-gradient(135deg, #F7F3E7 20%, #DAC29E 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border-image: linear-gradient(to right, #B89A70, #E5CDA8) 1;
+    }
+
+    /* graphic decorative line */
+    .section-divider {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, #C4A079, rgba(196,160,121,0.2));
+      margin-top: 0.8rem;
+      margin-bottom: 1.8rem;
+    }
+
+    /* ---------- PREMIUM CARD STYLE – FROSTED GLASS, GOLD BORDER ---------- */
+    .premium-card {
+      background: rgba(18, 22, 30, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(200, 175, 120, 0.25);
+      padding: 2rem 2.2rem;
+      border-radius: 0px;
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6);
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .premium-card:hover {
+      border-color: rgba(216, 183, 140, 0.5);
+      background: rgba(22, 28, 38, 0.7);
+      box-shadow: 0 24px 50px -12px rgba(160, 130, 80, 0.2);
+    }
+
+    /* ---------- INTRO · WHAT / WHY · GRID WITH CONTRAST ---------- */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.8rem;
+      margin-top: 1.2rem;
+    }
+
+    @media (max-width: 750px) {
+      .two-col-grid { grid-template-columns: 1fr; }
+    }
+
+    .philosophy-block {
+      background: rgba(10, 14, 19, 0.7);
+      padding: 1.8rem;
+      border-left: 4px solid #B48C5C;
+      backdrop-filter: blur(4px);
+    }
+
+    .philosophy-block h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #E6D6BB;
+      margin-bottom: 1.2rem;
+    }
+
+    .philosophy-block ul {
+      list-style: none;
+    }
+
+    .philosophy-block li {
+      margin-bottom: 0.7rem;
+      font-weight: 380;
+      color: #D6CFC2;
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+    }
+
+    .philosophy-block li::before {
+      content: "▹";
+      color: #CDAA7C;
+      font-size: 1.2rem;
+    }
+
+    .contrast-label {
+      display: inline-block;
+      background: rgba(200, 170, 110, 0.15);
+      padding: 0.2rem 0.9rem;
+      border: 0.5px solid rgba(212, 180, 140, 0.5);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #F0DDC0;
+      margin-bottom: 1rem;
+    }
+
+    /* ---------- CORE PRINCIPLES – GOLD NUMBERS, ELEGANT ---------- */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .principle-gold {
+      background: rgba(18, 23, 30, 0.6);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(190, 160, 100, 0.25);
+      padding: 1.8rem 1.5rem;
+      transition: transform 0.25s ease, border-color 0.2s;
+    }
+
+    .principle-gold:hover {
+      transform: translateY(-6px);
+      border-color: #C4A079;
+    }
+
+    .principle-num {
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: #C8A87C;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      font-family: 'Inter', monospace;
+    }
+
+    .principle-gold p {
+      font-size: 1rem;
+      font-weight: 450;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: #F0EBE1;
+      border-top: 1px solid rgba(200, 168, 120, 0.3);
+      padding-top: 0.9rem;
+    }
+
+    /* ---------- SYSTEM WORKFLOW – GRAPHIC DIAGRAM, GOLD CONNECTORS ---------- */
+    .workflow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(8, 12, 18, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #4E463A;
+      padding: 2.5rem 1.2rem;
+      margin: 1.2rem 0;
+      position: relative;
+    }
+
+    .workflow-node {
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .node-icon {
+      font-size: 2.8rem;
+      color: #E1C9A8;
+      filter: drop-shadow(0 0 6px rgba(212, 180, 140, 0.5));
+      margin-bottom: 0.5rem;
+    }
+
+    .node-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #F1E7DA;
+      border-bottom: 1.5px solid #B48C5C;
+      display: inline-block;
+      padding-bottom: 0.2rem;
+    }
+
+    .node-desc {
+      font-size: 0.8rem;
+      color: #C6B7A2;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-top: 0.6rem;
+    }
+
+    .workflow-arrow {
+      font-size: 2.5rem;
+      color: #9F8B72;
+      font-weight: 200;
+      padding: 0 0.3rem;
+    }
+
+    @media (max-width: 750px) {
+      .workflow-arrow { transform: rotate(90deg); margin: 0.8rem 0; }
+    }
+
+    /* ---------- ENTRY ACTIONS – BOLD, GOLD BORDERS, LUXURY ---------- */
+    .entry-luxury {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.2rem;
+      margin-top: 2rem;
+    }
+
+    .btn-gold {
+      background: transparent;
+      border: 1.8px solid #C8A87C;
+      color: #FEF2DF;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 6px;
+      padding: 1rem 2.4rem;
+      text-decoration: none;
+      font-weight: 550;
+      transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(200, 168, 120, 0);
+      border-radius: 0px;
+    }
+
+    .btn-gold:hover {
+      background: rgba(200, 168, 120, 0.1);
+      border-color: #E5CDA8;
+      color: #FFFFFF;
+      box-shadow: 0 0 22px rgba(200, 168, 120, 0.5);
+      border-width: 1.8px;
+    }
+
+    /* ---------- WHAT NOESIS IS NOT – STRIKE, ELEGANT NEGATION ---------- */
+    .not-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .not-item {
+      background: rgba(0,0,0,0.25);
+      padding: 1.2rem 1.2rem;
+      border-left: 3px solid #6A5C4A;
+      font-size: 1rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #D6CDBC;
+      text-decoration: line-through 1.2px rgba(180, 140, 100, 0.5);
+      transition: all 0.2s;
+    }
+
+    .not-item:hover {
+      background: rgba(90, 75, 55, 0.2);
+      border-left-color: #C4A079;
+      text-decoration-color: rgba(220, 180, 120, 0.9);
+    }
+
+    /* ---------- CLOSING STATEMENT – LARGE, ITALIC, GOLD ---------- */
+    .closing-statement {
+      font-size: 1.0rem;
+      font-weight: 150;
+      font-style: italic;
+      line-height: 1.5;
+      color: #F5EDDE;
+      border-top: 1px solid #8A7A64;
+      border-bottom: 1px solid #8A7A64;
+      padding: 2rem 0.5rem;
+      text-align: center;
+      letter-spacing: 0.8px;
+      background: rgba(24, 28, 35, 0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    /* ---------- FOOTER – PREMIUM SUBDUED ---------- */
+    footer {
+      margin-top: 2rem;
+      padding: 2rem 0.5rem 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #AD9F8D;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      border-top: 1px solid rgba(180, 150, 110, 0.25);
+    }
+
+    footer span {
+      font-weight: 400;
+      color: #DAC29E;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid rgba(200, 175, 120, 0.15);
+      margin: 2rem 0;
+    }
+
+    /* small utility */
+    .gold-meta {
+      color: #C9AF89;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+
+    <!-- HEADER – LOGO (identity, not link) with OS tagline -->
+    <header class="identity-header">
+      <h1>NOESIS</h1>
+      <div class="os-tagline">A Personal Knowledge Operating System</div>
+    </header>
+
+    <!-- TOP NAVIGATION – premium, strict order -->
+    <nav class="nav-top">
+      <a href="index.html">HOME</a>
+      <a href="editor.html">WRITE</a>
+      <a href="graph.html">GRAPH</a>
+      <a href="ideas.html">IDEAS</a>
+      <a href="creator.html">CREATOR</a>
+    </nav>
+
+    <!-- MAIN CONTENT – full philosophical exposition, premium graphics -->
+    <main>
+
+      <!-- SECTION 1 – WHAT IS NOESIS? (detailed) -->
+      <section id="what-is-noesis">
+        <h2>What is Noesis?</h2>
+        <div class="section-divider"></div>
+        <div class="premium-card" style="margin-bottom: 1.5rem;">
+          <p style="font-size: 1.2rem; margin-bottom: 1.5rem; font-weight: 380;">Noesis is a system for thinking in public — even if the public is only you.</p>
+          <p style="font-size: 1rem; color: #E0D9CF;">It is not a note-taking app. It is not a productivity tracker. It is not a storage container.</p>
+          <p style="margin-top: 1.2rem; font-size: 1.1rem; font-weight: 450; border-left: 3px solid #B89A70; padding-left: 1.2rem;">
+            Noesis is a structured environment where ideas are:<br>
+            <span style="color: #F2E3CF;">written clearly · linked intentionally · examined honestly · allowed to evolve</span>
+          </p>
+          <p style="margin-top: 1.2rem; color: #D9CFBF;">It treats knowledge as a <span style="border-bottom: 1.5px solid #CDAA7C;">network</span>, not a folder.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 2 – WHY NOESIS EXISTS (comparison grid) -->
+      <section id="why-exists">
+        <h2>Why Noesis exists</h2>
+        <div class="section-divider"></div>
+        <div class="two-col-grid">
+          <div class="philosophy-block">
+            <span class="contrast-label">most digital tools</span>
+            <ul>
+              <li>optimize for speed</li>
+              <li>optimize for engagement</li>
+              <li>optimize for accumulation</li>
+              <li>optimize for distraction</li>
+              <li>folders force hierarchy</li>
+              <li>notes disappear in timelines</li>
+            </ul>
+          </div>
+          <div class="philosophy-block" style="border-left-color: #D6B185;">
+            <span class="contrast-label">NOESIS OPTIMIZES FOR</span>
+            <ul>
+              <li>clarity</li>
+              <li>structure</li>
+              <li>revision</li>
+              <li>intellectual honesty</li>
+              <li>graphs allow connection</li>
+              <li>ideas persist in systems</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 – CORE PRINCIPLES (expanded, gold) -->
+      <section id="core-principles">
+        <h2>Core principles</h2>
+        <div class="section-divider"></div>
+        <div class="principles-grid">
+          <div class="principle-gold">
+            <div class="principle-num">Focus</div>
+            <p>One idea per note<br><span style="font-size: 0.8rem; color: #C6B492; text-transform: none;">Clarity begins when ideas are separated.</span></p>
+          </div>
+          <div class="principle-gold">
+            <div class="principle-num">Connection</div>
+            <p>Everything can connect<br><span style="font-size: 0.8rem; color: #C6B492; text-transform: none;">Ideas form networks, not categories.</span></p>
+          </div>
+          <div class="principle-gold">
+            <div class="principle-num">Evolutionary</div>
+            <p>Evolution is preserved<br><span style="font-size: 0.8rem; color: #C6B492; text-transform: none;">Changing your mind is evidence of thinking.</span></p>
+          </div>
+          <div class="principle-gold">
+            <div class="principle-num">Curiocity</div>
+            <p>Questions are first-class<br><span style="font-size: 0.8rem; color: #C6B492; text-transform: none;">Not all notes must contain answers.</span></p>
+          </div>
+          <div class="principle-gold">
+            <div class="principle-num">Annonimous</div>
+            <p>Contradictions are signals<br><span style="font-size: 0.8rem; color: #C6B492; text-transform: none;">Conflict invites investigation.</span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 – HOW THE SYSTEM WORKS (graphic workflow / system map) -->
+      <section id="system-works">
+        <h2>How the system works</h2>
+        <div class="section-divider"></div>
+        <div class="workflow-diagram">
+          <div class="workflow-node">
+            <div class="node-icon">✧</div>
+            <div class="node-title">WRITE</div>
+            <div class="node-desc">one idea · editor</div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-node">
+            <div class="node-icon">◈</div>
+            <div class="node-title">NODE</div>
+            <div class="node-desc">each idea becomes node</div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-node">
+            <div class="node-icon">⌬</div>
+            <div class="node-title">LINK</div>
+            <div class="node-desc">connections created</div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-node">
+            <div class="node-icon">⎔</div>
+            <div class="node-title">GRAPH</div>
+            <div class="node-desc">reveals structure</div>
+          </div>
+        </div>
+        <p style="margin-top: 1.5rem; color: #DFD3C2; font-size: 0.95rem; letter-spacing: 1.5px; text-align: center; background: rgba(0,0,0,0.2); padding: 1rem;">
+          <span style="font-weight: 600; color: #F0DDC0;">Revisions</span> track how thinking changes. Noesis does not reward volume — it rewards coherence.
+        </p>
+      </section>
+
+      <!-- SECTION 5 – WHERE TO BEGIN (entry actions) -->
+      <section id="entry-actions">
+        <h2>Where to begin</h2>
+        <div class="section-divider"></div>
+        <div class="entry-luxury">
+          <a href="editor.html" class="btn-gold">✧ Write an idea</a>
+          <a href="graph.html" class="btn-gold">◈ Explore connections</a>
+          <a href="ideas.html" class="btn-gold">⊞ Browse all notes</a>
+        </div>
+        <p style="margin-top: 1.2rem; color: #BCAA93; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase;">the system grows slowly. that is intentional.</p>
+      </section>
+
+      <!-- SECTION 6 – WHAT NOESIS IS NOT (graphic negation) -->
+      <section id="what-not">
+        <h2>What Noesis is not</h2>
+        <div class="section-divider"></div>
+        <div class="not-grid">
+          <div class="not-item">it does not gamify thinking</div>
+          <div class="not-item">it does not chase trends</div>
+          <div class="not-item">it does not optimize for attention</div>
+          <div class="not-item">it does not track you</div>
+        </div>
+        <p style="margin-top: 1.5rem; font-style: italic; color: #CBB99A;">It exists to preserve reasoning over time.</p>
+      </section>
+
+      <!-- SECTION 7 – CLOSING STATEMENT (laboratory for thought) -->
+      <section id="closing">
+        <div class="closing-statement">
+          Noesis is a laboratory for thought.<br>
+          Ideas are allowed to connect.<br>
+          Ideas are allowed to change.<br>
+          <span style="font-weight: 600; color: #E8DBCA;">Forgetting is a system failure.</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION BAR – mirror, smaller (premium) -->
+    <nav class="nav-bottom">
+      <a href="index.html">HOME</a>
+      <a href="editor.html">WRITE</a>
+      <a href="graph.html">GRAPH</a>
+      <a href="ideas.html">IDEAS</a>
+      <a href="creator.html">CREATOR</a>
+    </nav>
+
+    <!-- FOOTER – author, year, essence -->
+    <footer>
+      <span>© 2026 Anish Kushwaha • All rights reserved</span><br>
+      <span style="letter-spacing: 3px; font-size: 0.7rem;">⚚Ⓐ⚚</span>
+    </footer>
+
+  </div> <!-- end page-container -->
+
+  <!-- BACKEND CONNECTION – HEALTH CHECK (stateless, premium instrumentation) -->
+  <script>
+    (function() {
+      "use strict";
+      const API_BASE = "https://noesis-psi.vercel.app";
+
+      async function checkHealth() {
+        try {
+          const res = await fetch(API_BASE + "/api/health");
+          if (!res.ok) {
+            console.warn("Noesis backend health status:", res.status);
+            return;
+          }
+          const data = await res.json();
+          console.log("⚡ NOESIS backend live:", data);
+        } catch (err) {
+          console.log("⊡ Noesis backend unreachable — offline‑first mode active");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", checkHealth);
+      window.NOESIS = window.NOESIS || { apiBase: API_BASE };
+    })();
+  </script>
+</body>
+  </html>
