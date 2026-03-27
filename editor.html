@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>NOESIS · Editor</title>
+  <meta name="description" content="Write atomic ideas in Markdown, link them into a graph, and evolve them over time.">
+  <meta name="author" content="Anish kushwaha">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Markdown + highlight -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+  <style>
+    /* ---------- GLOBAL PREMIUM DARK THEME (mirrors Home + Graph) ---------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0C0F14;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 170, 100, 0.05) 0px, transparent 20%),
+        radial-gradient(circle at 90% 70%, rgba(180, 150, 80, 0.04) 0px, transparent 25%),
+        linear-gradient(145deg, rgba(20, 25, 33, 0.3) 0%, rgba(8, 10, 14, 0.8) 100%);
+      color: #F0F3F7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 350;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      width: 50vw;
+      height: 50vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      top: -10vh;
+      left: -10vw;
+      background: radial-gradient(circle at center, rgba(200, 175, 100, 0.08), transparent 70%);
+    }
+    body::after {
+      bottom: -10vh;
+      right: -10vw;
+      background: radial-gradient(circle at center, rgba(140, 170, 200, 0.05), transparent 75%);
+    }
+
+    .page-container {
+      max-width: 1400px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ---------- HEADER (identical to Home) ---------- */
+    .identity-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .identity-header h1 {
+      font-size: 4.2rem;
+      font-weight: 650;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3E9D2 60%, #D4B48C 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      line-height: 1;
+    }
+    .os-tagline {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #D8C9AA;
+      background: rgba(12, 16, 22, 0.6);
+      display: inline-block;
+      padding: 0.3rem 1.5rem;
+      border: 1px solid rgba(212, 180, 140, 0.3);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+    }
+
+    /* ---------- NAVIGATION (top + bottom) ---------- */
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem 2rem;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.25);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      margin-bottom: 2rem;
+      background: rgba(8, 10, 14, 0.35);
+      backdrop-filter: blur(8px);
+    }
+    .nav-bottom {
+      margin-top: 2rem;
+      margin-bottom: 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.18);
+      border-bottom: none;
+      padding: 0.8rem 0;
+      background: transparent;
+      backdrop-filter: none;
+    }
+    nav a {
+      color: #E7DFD1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 550;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid transparent;
+      transition: 0.2s;
+    }
+    nav a:hover, nav a.active {
+      border-bottom-color: #D8B78C;
+      color: #FFF9EC;
+    }
+    .nav-bottom a {
+      font-size: 0.7rem;
+      letter-spacing: 2.5px;
+      color: #C9BCA5;
+    }
+
+    /* ---------- EDITOR LAYOUT (cards, gold accents) ---------- */
+    .editor-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .card {
+      background: rgba(18, 22, 30, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(200, 175, 120, 0.25);
+      border-radius: 0px;
+      box-shadow: 0 12px 25px -10px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .card-header {
+      padding: 1rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #EADCB8;
+      border-left: 3px solid #C4A079;
+      padding-left: 0.6rem;
+    }
+    .card-content {
+      padding: 1.2rem 1.5rem;
+    }
+
+    /* input / select styling */
+    .input-premium, .select-premium, .textarea-premium {
+      background: rgba(5, 7, 11, 0.9);
+      border: 1px solid rgba(150, 125, 90, 0.6);
+      color: #F5EEE3;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.8rem;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .input-premium:focus, .select-premium:focus, .textarea-premium:focus {
+      outline: none;
+      border-color: #C8A87C;
+    }
+    .row-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .row-flex > * { flex: 1; min-width: 150px; }
+
+    /* metadata pills */
+    .meta-pill {
+      background: rgba(10, 12, 16, 0.9);
+      border: 1px solid rgba(200, 175, 120, 0.4);
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+    }
+    .status-badge {
+      background: rgba(20, 24, 32, 0.8);
+      border: 1px solid rgba(200, 175, 120, 0.6);
+      padding: 0.2rem 0.8rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .status-badge.modified { border-color: #FACC6B; color: #FACC6B; }
+    .status-badge.saved { border-color: #4ADE80; color: #BBF7D0; }
+
+    /* toolbar buttons */
+    .toolbar-btn {
+      background: rgba(5, 7, 11, 0.9);
+      border: 1px solid rgba(150, 125, 90, 0.7);
+      color: #E9DFCF;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .toolbar-btn:hover {
+      background: rgba(200, 168, 120, 0.1);
+      border-color: #E5CDA8;
+    }
+
+    /* editor + preview grid */
+    .split-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .split-panel { grid-template-columns: 1fr; }
+    }
+    .editor-pane, .preview-pane {
+      background: rgba(7, 9, 14, 0.9);
+      border: 1px solid rgba(120, 100, 70, 0.7);
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+    }
+    .pane-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #CBB89D;
+      letter-spacing: 2px;
+    }
+    .markdown-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #F3EADF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+    }
+    .preview-content {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #E5E1D8;
+    }
+    .preview-content h1, .preview-content h2 { color: #F8E7CF; }
+    .preview-content pre { background: #020617; padding: 0.5rem; overflow-x: auto; }
+    .preview-content code { background: #111827; padding: 0.1rem 0.2rem; }
+
+    /* side panels (outline, links, history) */
+    .side-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    @media (max-width: 700px) {
+      .side-grid { grid-template-columns: 1fr; }
+    }
+    .panel-card {
+      background: rgba(10, 12, 18, 0.85);
+      border: 1px solid rgba(120, 100, 70, 0.8);
+      padding: 0.8rem;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #D6C9B4;
+      margin-bottom: 0.5rem;
+    }
+    .panel-body {
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+    }
+    .outline-item, .history-item {
+      padding: 0.2rem 0;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+    }
+    .history-item:hover, .outline-item:hover {
+      background: rgba(55, 65, 81, 0.3);
+    }
+
+    /* floating save */
+    .floating-save {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      background: #C8A87C;
+      color: #020617;
+      border: none;
+      border-radius: 40px;
+      padding: 0.7rem 1.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: none;
+      z-index: 20;
+    }
+    @media (max-width: 768px) {
+      .floating-save { display: inline-flex; }
+    }
+
+    footer {
+      margin-top: 2rem;
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #AD9F8D;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      border-top: 1px solid rgba(180, 150, 110, 0.25);
+    }
+  </style>
+</head>
+<body>
+<div class="page-container">
+  <!-- HEADER -->
+  <div class="identity-header">
+    <h1>NOESIS</h1>
+    <div class="os-tagline">A Personal Knowledge Operating System · Editor</div>
+  </div>
+
+  <!-- TOP NAVIGATION -->
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="editor.html" class="active">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+
+  <div class="editor-grid">
+    <!-- Metadata & title card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Note identity</span>
+        <div class="status-badge" id="status-indicator">Draft</div>
+      </div>
+      <div class="card-content">
+        <div class="row-flex">
+          <input id="note-title" class="input-premium" placeholder="Title of this idea · question · definition">
+          <select id="note-type" class="select-premium">
+            <option value="idea">Idea</option>
+            <option value="question">Question</option>
+            <option value="definition">Definition</option>
+          </select>
+          <select id="note-domain" class="select-premium">
+            <option value="default">Domain · Default</option>
+            <option value="philosophy">Philosophy</option>
+            <option value="technology">Technology</option>
+            <option value="systems">Systems</option>
+            <option value="personal">Personal</option>
+          </select>
+        </div>
+        <div class="row-flex">
+          <input id="note-tags" class="input-premium" placeholder="Tags: graph, identity, ...">
+          <input id="change-reason" class="input-premium" placeholder="Change reason (required for updates)">
+        </div>
+        <div class="row-flex" style="justify-content: space-between;">
+          <div class="meta-pill">ID: <span id="note-id-display">auto</span></div>
+          <div class="meta-pill">Created: <span id="created-at-display">—</span></div>
+          <div class="meta-pill">Modified: <span id="updated-at-display">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="card">
+      <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+        <span class="card-title">Markdown tools</span>
+        <div><span id="char-count">0</span> chars · <span id="word-count">0</span> words · ≈<span id="read-time">0</span> min</div>
+      </div>
+      <div class="card-content" style="padding-top: 0.5rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+          <button class="toolbar-btn" data-md="**bold**">Bold</button>
+          <button class="toolbar-btn" data-md="*italic*">Italic</button>
+          <button class="toolbar-btn" data-md="`code`">Code</button>
+          <button class="toolbar-btn" data-md="> quote">Quote</button>
+          <button class="toolbar-btn" data-md="# Heading 1">H1</button>
+          <button class="toolbar-btn" data-md="## Heading 2">H2</button>
+          <button class="toolbar-btn" data-md="```\ncode\n```">Code block</button>
+          <button class="toolbar-btn" data-md="- [ ] task">Task</button>
+          <button class="toolbar-btn" data-md="---">Rule</button>
+          <button class="toolbar-btn" data-md="[text](url)">Link</button>
+          <button class="toolbar-btn" id="btn-save">Save</button>
+          <button class="toolbar-btn" id="btn-clear">Clear draft</button>
+          <button class="toolbar-btn" id="btn-export">Export .md</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor + Preview split -->
+    <div class="split-panel">
+      <div class="editor-pane">
+        <div class="pane-header"><span>Markdown source</span><span id="connectivity-count">0 links</span></div>
+        <textarea id="markdown-input" class="markdown-textarea" placeholder="# One idea per note"></textarea>
+      </div>
+      <div class="preview-pane">
+        <div class="pane-header"><span>Live preview</span><span class="link-subtle" id="btn-jump-top">↺ top</span></div>
+        <div id="markdown-preview" class="preview-content"></div>
+      </div>
+    </div>
+
+    <!-- Side panels: outline, internal links, history -->
+    <div class="side-grid">
+      <div class="panel-card">
+        <div class="panel-header"><span>Outline</span><span id="outline-count"></span></div>
+        <div id="outline-panel" class="panel-body"></div>
+        <div class="panel-header" style="margin-top: 0.8rem;"><span>Internal links</span><span class="link-subtle" id="btn-open-linked">Open linked</span></div>
+        <input id="internal-link-search" class="input-premium" style="margin: 0.4rem 0;" placeholder="Search notes to link...">
+        <div id="links-panel" class="panel-body"></div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-header"><span>Versions & history</span><span id="total-revisions" class="meta-pill" style="font-size:0.7rem;">0</span></div>
+        <div id="history-panel" class="panel-body"></div>
+        <div class="panel-header" style="margin-top: 0.8rem;"><span>Session stats</span><span id="session-time" class="meta-pill">0:00</span></div>
+        <div class="panel-body"><span id="session-words">0</span> words this session</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="nav-bottom">
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+
+  <footer>
+    <span>© 2026 Anish Kushwaha · Noesis — a laboratory for thought</span>
+  </footer>
+</div>
+
+<button class="floating-save" id="floating-save">Save</button>
+
+<script>
+  (function() {
+    const STORAGE_CURRENT = "noesis-current-note";
+    const STORAGE_NOTES = "noesis-notes";
+    const STORAGE_HISTORY = "noesis-history";
+    const API_BASE = "https://noesis-psi.vercel.app";
+
+    // DOM elements
+    const titleInput = document.getElementById("note-title");
+    const typeSelect = document.getElementById("note-type");
+    const domainSelect = document.getElementById("note-domain");
+    const tagsInput = document.getElementById("note-tags");
+    const changeReasonInput = document.getElementById("change-reason");
+    const statusIndicator = document.getElementById("status-indicator");
+    const markdownInput = document.getElementById("markdown-input");
+    const previewEl = document.getElementById("markdown-preview");
+    const outlinePanel = document.getElementById("outline-panel");
+    const linksPanel = document.getElementById("links-panel");
+    const historyPanel = document.getElementById("history-panel");
+    const noteIdDisplay = document.getElementById("note-id-display");
+    const createdDisplay = document.getElementById("created-at-display");
+    const updatedDisplay = document.getElementById("updated-at-display");
+    const charCountEl = document.getElementById("char-count");
+    const wordCountEl = document.getElementById("word-count");
+    const readTimeEl = document.getElementById("read-time");
+    const connectivityCountEl = document.getElementById("connectivity-count");
+    const totalRevisionsEl = document.getElementById("total-revisions");
+    const sessionTimeEl = document.getElementById("session-time");
+    const sessionWordsEl = document.getElementById("session-words");
+    const btnSave = document.getElementById("btn-save");
+    const btnClear = document.getElementById("btn-clear");
+    const btnExport = document.getElementById("btn-export");
+    const btnJumpTop = document.getElementById("btn-jump-top");
+    const btnOpenLinked = document.getElementById("btn-open-linked");
+    const floatingSave = document.getElementById("floating-save");
+    const internalLinkSearch = document.getElementById("internal-link-search");
+
+    let note = null;
+    let sessionStart = Date.now();
+    let sessionWords = 0;
+    let isDirty = false;
+    let sessionTimer;
+
+    // Markdown configuration
+    marked.setOptions({
+      breaks: true,
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    function newNote() {
+      const now = new Date().toISOString();
+      return {
+        id: "note-" + Date.now().toString(36),
+        title: "",
+        markdown: "",
+        type: "idea",
+        domain: "default",
+        tags: [],
+        createdAt: now,
+        updatedAt: now,
+        revisions: 0
+      };
+    }
+
+    function loadCurrentNote() {
+      const raw = localStorage.getItem(STORAGE_CURRENT);
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function persistCurrentNote() {
+      if (note) localStorage.setItem(STORAGE_CURRENT, JSON.stringify(note));
+    }
+
+    function saveToCollection() {
+      let list = JSON.parse(localStorage.getItem(STORAGE_NOTES) || "[]");
+      const idx = list.findIndex(n => n.id === note.id);
+      if (idx >= 0) list[idx] = note;
+      else list.push(note);
+      localStorage.setItem(STORAGE_NOTES, JSON.stringify(list));
+      return list;
+    }
+
+    function pushHistory(reason) {
+      let history = JSON.parse(localStorage.getItem(STORAGE_HISTORY) || "[]");
+      history.push({
+        noteId: note.id,
+        timestamp: new Date().toISOString(),
+        reason: reason || "manual",
+        title: note.title,
+        markdown: note.markdown
+      });
+      localStorage.setItem(STORAGE_HISTORY, JSON.stringify(history));
+    }
+
+    function renderHistory() {
+      let history = JSON.parse(localStorage.getItem(STORAGE_HISTORY) || "[]");
+      const noteHistory = history.filter(h => h.noteId === note.id).reverse().slice(0, 20);
+      totalRevisionsEl.innerText = noteHistory.length;
+      historyPanel.innerHTML = "";
+      if (noteHistory.length === 0) {
+        historyPanel.innerHTML = "<p>No versions yet</p>";
+        return;
+      }
+      noteHistory.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.textContent = new Date(entry.timestamp).toLocaleString() + " — " + (entry.reason || "manual");
+        div.addEventListener("click", () => {
+          if (confirm("Restore this version? Current unsaved changes will be lost.")) {
+            markdownInput.value = entry.markdown;
+            titleInput.value = entry.title || "";
+            syncFromInputs(false);
+            updateStatsAndPreview();
+            updateStatus("modified");
+            isDirty = true;
+          }
+        });
+        historyPanel.appendChild(div);
+      });
+    }
+
+    function renderOutline() {
+      const text = markdownInput.value;
+      const lines = text.split(/\r?\n/);
+      const headings = [];
+      lines.forEach((line, idx) => {
+        const match = /^(#{1,6})\s+(.*)/.exec(line);
+        if (match) {
+          headings.push({ level: match[1].length, title: match[2].trim(), lineIdx: idx });
+        }
+      });
+      outlinePanel.innerHTML = "";
+      if (headings.length === 0) {
+        outlinePanel.innerHTML = "<p>No headings found</p>";
+        return;
+      }
+      headings.forEach(h => {
+        const div = document.createElement("div");
+        div.className = "outline-item";
+        div.style.paddingLeft = (h.level - 1) * 0.8 + "rem";
+        div.textContent = h.title;
+        div.addEventListener("click", () => {
+          const pos = markdownInput.value.split(/\r?\n/).slice(0, h.lineIdx).join("\n").length;
+          markdownInput.focus();
+          markdownInput.setSelectionRange(pos, pos);
+        });
+        outlinePanel.appendChild(div);
+      });
+    }
+
+    function updateStatsAndPreview() {
+      const text = markdownInput.value;
+      const chars = text.length;
+      const words = (text.trim().match(/\S+/g) || []).length;
+      const minutes = Math.max(1, Math.ceil(words / 200));
+      charCountEl.textContent = chars;
+      wordCountEl.textContent = words;
+      readTimeEl.textContent = minutes;
+      sessionWords = words;
+      sessionWordsEl.textContent = sessionWords;
+      const html = marked.parse(text || "");
+      previewEl.innerHTML = html;
+      previewEl.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
+      const linkCount = (text.match(/\[\[.*?\]\]/g) || []).length + (text.match(/\[.*?\]\(.*?\)/g) || []).length;
+      connectivityCountEl.textContent = linkCount + " links";
+      renderOutline();
+    }
+
+    function updateStatus(state) {
+      statusIndicator.classList.remove("modified", "saved");
+      if (state === "modified") {
+        statusIndicator.textContent = "Modified";
+        statusIndicator.classList.add("modified");
+      } else if (state === "saved") {
+        statusIndicator.textContent = "Saved";
+        statusIndicator.classList.add("saved");
+      } else {
+        statusIndicator.textContent = "Draft";
+      }
+    }
+
+    function syncFromInputs(skipPreview) {
+      if (!note) note = newNote();
+      note.title = titleInput.value.trim();
+      note.type = typeSelect.value;
+      note.domain = domainSelect.value;
+      note.tags = tagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+      note.markdown = markdownInput.value;
+      note.updatedAt = new Date().toISOString();
+      noteIdDisplay.textContent = note.id;
+      createdDisplay.textContent = note.createdAt ? new Date(note.createdAt).toLocaleString() : "—";
+      updatedDisplay.textContent = new Date(note.updatedAt).toLocaleString();
+      persistCurrentNote();
+      if (!skipPreview) updateStatsAndPreview();
+    }
+
+    function loadNoteData(n) {
+      note = n;
+      titleInput.value = n.title || "";
+      typeSelect.value = n.type || "idea";
+      domainSelect.value = n.domain || "default";
+      tagsInput.value = (n.tags || []).join(", ");
+      markdownInput.value = n.markdown || "";
+      noteIdDisplay.textContent = n.id;
+      createdDisplay.textContent = n.createdAt ? new Date(n.createdAt).toLocaleString() : "—";
+      updatedDisplay.textContent = n.updatedAt ? new Date(n.updatedAt).toLocaleString() : "—";
+      updateStatsAndPreview();
+      renderHistory();
+      isDirty = false;
+      updateStatus("saved");
+    }
+
+    function saveNote(reason) {
+      if (!note) note = newNote();
+      if (note.markdown === "" && titleInput.value.trim() === "") {
+        alert("Nothing to save yet.");
+        return;
+      }
+      if (note.revisions > 0 && !changeReasonInput.value.trim()) {
+        alert("Please provide a change reason before updating.");
+        changeReasonInput.focus();
+        return;
+      }
+      syncFromInputs(true);
+      note.revisions += 1;
+      pushHistory(changeReasonInput.value.trim() || reason);
+      saveToCollection();
+      renderHistory();
+      updateStatsAndPreview();
+      isDirty = false;
+      updateStatus("saved");
+      changeReasonInput.value = "";
+      // optional backend sync
+      fetch(API_BASE + "/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: note.id,
+          title: note.title,
+          markdown: note.markdown,
+          links: [],
+          domain: note.domain
+        })
+      }).catch(() => {});
+    }
+
+    function clearDraft() {
+      if (confirm("Clear current draft? Unsaved changes will be lost.")) {
+        markdownInput.value = "";
+        titleInput.value = "";
+        changeReasonInput.value = "";
+        tagsInput.value = "";
+        typeSelect.value = "idea";
+        domainSelect.value = "default";
+        syncFromInputs(false);
+        updateStatsAndPreview();
+        updateStatus("modified");
+        isDirty = true;
+      }
+    }
+
+    function exportMarkdown() {
+      const blob = new Blob([markdownInput.value], { type: "text/markdown" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = (note.title || note.id || "noesis-note") + ".md";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function insertMarkdownSnippet(snippet) {
+      const el = markdownInput;
+      const start = el.selectionStart || 0;
+      const end = el.selectionEnd || 0;
+      const value = el.value;
+      el.value = value.slice(0, start) + snippet + value.slice(end);
+      const newCursor = start + snippet.length;
+      el.focus();
+      el.setSelectionRange(newCursor, newCursor);
+      syncFromInputs(false);
+      updateStatsAndPreview();
+      isDirty = true;
+      updateStatus("modified");
+    }
+
+    function updateInternalLinksPanel() {
+      const allNotes = JSON.parse(localStorage.getItem(STORAGE_NOTES) || "[]");
+      const q = internalLinkSearch.value.toLowerCase();
+      const candidates = allNotes.filter(n => n.id !== note?.id && (n.title || "").toLowerCase().includes(q));
+      linksPanel.innerHTML = "";
+      if (candidates.length === 0) {
+        linksPanel.innerHTML = "<p>No matching notes</p>";
+        return;
+      }
+      candidates.slice(0, 15).forEach(n => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.textContent = (n.title || "(untitled)");
+        div.addEventListener("click", () => {
+          insertMarkdownSnippet(`[[${n.title || n.id}]]`);
+        });
+        linksPanel.appendChild(div);
+      });
+    }
+
+    function openLinkedNoteAtCursor() {
+      const text = markdownInput.value;
+      const pos = markdownInput.selectionStart;
+      const regex = /\[\[([^\]]+)\]\]/g;
+      let match;
+      let foundTitle = null;
+      while ((match = regex.exec(text)) !== null) {
+        if (pos >= match.index && pos <= match.index + match[0].length) {
+          foundTitle = match[1].trim();
+          break;
+        }
+      }
+      if (!foundTitle) {
+        alert("Place cursor inside an internal link like [[Note Title]]");
+        return;
+      }
+      const allNotes = JSON.parse(localStorage.getItem(STORAGE_NOTES) || "[]");
+      const target = allNotes.find(n => (n.title || "").toLowerCase() === foundTitle.toLowerCase());
+      if (!target) {
+        alert("No saved note with that title.");
+        return;
+      }
+      if (isDirty && !confirm("Unsaved changes. Continue?")) return;
+      loadNoteData(target);
+    }
+
+    function startSessionTimer() {
+      sessionTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        sessionTimeEl.textContent = `${mins}:${secs < 10 ? "0" + secs : secs}`;
+      }, 1000);
+    }
+
+    // Event listeners
+    markdownInput.addEventListener("input", () => {
+      syncFromInputs(false);
+      isDirty = true;
+      updateStatus("modified");
+    });
+    titleInput.addEventListener("input", () => { syncFromInputs(true); isDirty = true; updateStatus("modified"); });
+    typeSelect.addEventListener("change", () => { syncFromInputs(true); isDirty = true; updateStatus("modified"); });
+    domainSelect.addEventListener("change", () => { syncFromInputs(true); isDirty = true; updateStatus("modified"); });
+    tagsInput.addEventListener("input", () => { syncFromInputs(true); isDirty = true; updateStatus("modified"); });
+
+    document.querySelectorAll(".toolbar-btn[data-md]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        insertMarkdownSnippet(btn.dataset.md);
+      });
+    });
+
+    btnSave.addEventListener("click", () => saveNote("manual save"));
+    floatingSave.addEventListener("click", () => saveNote("floating save"));
+    btnClear.addEventListener("click", clearDraft);
+    btnExport.addEventListener("click", exportMarkdown);
+    btnJumpTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    btnOpenLinked.addEventListener("click", openLinkedNoteAtCursor);
+    internalLinkSearch.addEventListener("input", updateInternalLinksPanel);
+
+    window.addEventListener("beforeunload", (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
+
+    // Initial load
+    const existing = loadCurrentNote();
+    if (existing) loadNoteData(existing);
+    else {
+      note = newNote();
+      loadNoteData(note);
+    }
+    startSessionTimer();
+    updateInternalLinksPanel();
+  })();
+</script>
+</body>
+  </html>
