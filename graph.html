@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>NOESIS · Graph · knowledge simulation</title>
+  <meta name="description" content="Interactive force‑directed graph of your ideas — navigate your mind.">
+  <meta name="author" content="Anish kushwaha">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0C0F14;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #F0F3F7;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* premium header - identical to home */
+    .identity-header {
+      text-align: center;
+      padding: 0.8rem 1.5rem 0.4rem;
+      background: rgba(8, 10, 14, 0.7);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.25);
+      z-index: 20;
+    }
+
+    .identity-header h1 {
+      font-size: 2.2rem;
+      font-weight: 650;
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3E9D2 60%, #D4B48C 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    /* navigation - top */
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem 2rem;
+      padding: 0.6rem 0;
+      background: rgba(8, 10, 14, 0.6);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      z-index: 20;
+    }
+
+    nav a {
+      color: #E7DFD1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 550;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid transparent;
+      transition: 0.2s;
+    }
+
+    nav a:hover, nav a.active {
+      border-bottom-color: #D8B78C;
+      color: #FFF9EC;
+    }
+
+    /* main layout */
+    .graph-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+
+    canvas {
+      flex: 1;
+      background: radial-gradient(circle at 30% 20%, #10141C, #080A0E);
+      display: block;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    /* ---------- CONTROL PANEL (top‑right, glass, premium) ---------- */
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 300px;
+      background: rgba(12, 16, 22, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 180, 140, 0.4);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.8rem;
+      z-index: 30;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      transition: 0.2s;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .control-panel h3 {
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.8rem;
+      color: #EADCB8;
+      border-left: 3px solid #C4A079;
+      padding-left: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-group label {
+      flex: 1;
+    }
+
+    input[type="range"] {
+      width: 140px;
+      background: #2A2E36;
+      height: 2px;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]:focus {
+      outline: none;
+    }
+
+    button, .filter-btn, .toggle-btn {
+      background: transparent;
+      border: 1px solid #B89A70;
+      color: #F0E2CE;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 4px;
+    }
+
+    button:hover, .filter-btn:hover, .toggle-btn:hover {
+      background: rgba(184, 154, 112, 0.2);
+      border-color: #E5CDA8;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 0.4rem;
+      background: #1A1E26;
+      border: 1px solid #5F5A4E;
+      color: #F3E9D2;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    hr {
+      margin: 0.8rem 0;
+      border-color: #2F2A22;
+    }
+
+    /* side panel (node inspector) - slide from right */
+    .side-panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 320px;
+      background: rgba(12, 16, 22, 0.95);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(212, 180, 140, 0.5);
+      transform: translateX(0%);
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      z-index: 35;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 1.5rem;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .side-panel.closed {
+      transform: translateX(100%);
+    }
+
+    .panel-toggle {
+      position: absolute;
+      right: 330px;
+      top: 20px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #B89A70;
+      color: #F0DDC0;
+      border-radius: 30px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      z-index: 36;
+      backdrop-filter: blur(4px);
+    }
+
+    .panel-toggle:hover {
+      background: #B89A70;
+      color: #0C0F14;
+    }
+
+    .node-detail {
+      background: #0F131C;
+      padding: 0.8rem;
+      border-left: 3px solid #C4A079;
+      border-radius: 6px;
+      word-break: break-word;
+    }
+
+    .connection-list {
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+    }
+
+    /* bottom navigation mirror */
+    .bottom-nav {
+      background: rgba(8, 10, 14, 0.7);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(212, 180, 140, 0.2);
+      padding: 0.4rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      z-index: 20;
+    }
+
+    .bottom-nav a {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: #C9BCA5;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 800px) {
+      .control-panel { width: 260px; top: 10px; right: 10px; }
+      .side-panel { width: 280px; }
+      .panel-toggle { right: 290px; top: 10px; }
+    }
+  </style>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="identity-header">
+    <h1>NOESIS</h1>
+  </div>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html" class="active">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+
+  <div class="graph-container">
+    <canvas id="graph-canvas"></canvas>
+
+    <!-- control panel (right side) -->
+    <div class="control-panel">
+      <h3>⚡ SIMULATION CONSOLE</h3>
+      <div class="control-group">
+        <label>⚡ Force strength</label>
+        <input type="range" id="force-strength" min="0" max="300" step="1" value="120">
+      </div>
+      <div class="control-group">
+        <label>📏 Link distance</label>
+        <input type="range" id="link-distance" min="30" max="200" step="2" value="80">
+      </div>
+      <div class="control-group">
+        <label>🌍 Gravity</label>
+        <input type="range" id="gravity" min="0" max="0.5" step="0.005" value="0.08">
+      </div>
+      <div class="control-group">
+        <label>⏩ Speed (alpha)</label>
+        <input type="range" id="alpha-speed" min="0.1" max="0.98" step="0.01" value="0.5">
+      </div>
+      <div class="control-group">
+        <button id="toggle-sim">⏸️ Pause</button>
+        <button id="reset-layout">⟳ Reset</button>
+        <button id="freeze-toggle">❄️ Freeze</button>
+      </div>
+      <div class="control-group">
+        <label>🔗 Edge style</label>
+        <select id="edge-style">
+          <option value="solid">Solid</option>
+          <option value="dashed">Dashed (supports)</option>
+          <option value="dotted">Dotted (contradicts)</option>
+        </select>
+        <button id="toggle-edges" class="toggle-btn">Hide edges</button>
+      </div>
+      <div class="control-group">
+        <label>🏷️ Labels</label>
+        <button id="toggle-labels" class="toggle-btn">Hide labels</button>
+      </div>
+      <hr>
+      <h3>🔍 SEARCH & FILTER</h3>
+      <input type="text" id="search-input" class="search-box" placeholder="Search node...">
+      <div class="control-group">
+        <label>📂 Type:</label>
+        <select id="type-filter">
+          <option value="all">All</option>
+          <option value="Idea">Idea</option>
+          <option value="Question">Question</option>
+          <option value="Definition">Definition</option>
+        </select>
+        <label>🏷️ Domain:</label>
+        <select id="domain-filter">
+          <option value="all">All</option>
+        </select>
+        <button id="apply-filter">Apply</button>
+      </div>
+      <div class="control-group">
+        <button id="show-connected-only">🔗 Connected subgraph</button>
+        <button id="expand-neighbors">➕ Expand neighbors</button>
+        <button id="clear-filter">Clear filters</button>
+      </div>
+      <hr>
+      <div class="stat-grid">
+        <div>📦 Nodes: <span id="node-count">0</span></div>
+        <div>🔗 Edges: <span id="edge-count">0</span></div>
+        <div>🏆 Most connected: <span id="most-connected">—</span></div>
+        <div>⚫ Isolated: <span id="isolated-count">0</span></div>
+        <div>📊 Density: <span id="density">0.00</span></div>
+      </div>
+    </div>
+
+    <!-- node inspector side panel -->
+    <div class="side-panel" id="side-panel">
+      <div style="display: flex; justify-content: space-between;">
+        <h3 style="color:#EADCB8;">📋 NODE INSPECTOR</h3>
+        <button id="close-panel" style="border:none; font-size:1rem;">✕</button>
+      </div>
+      <div id="node-detail-content">
+        <p style="color:#9B8E7A;">Select a node to inspect</p>
+      </div>
+    </div>
+    <div class="panel-toggle" id="panel-toggle">📋</div>
+  </div>
+
+  <div class="bottom-nav">
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </div>
+
+  <script>
+    (function(){
+      // ---------- DOM elements ----------
+      const canvas = document.getElementById('graph-canvas');
+      const ctx = canvas.getContext('2d');
+      let width = window.innerWidth;
+      let height = window.innerHeight - 130; // adjust for header+nav+bottom
+      
+      // data structures
+      let nodes = [];
+      let links = [];
+      let nodeMap = new Map();     // id -> node
+      let selectedNodeId = null;
+      let hoveredNodeId = null;
+      let freezePositions = false;
+      let simRunning = true;
+      let showEdges = true;
+      let showLabels = true;
+      let edgeStyle = 'solid';     // solid, dashed, dotted
+      
+      // filters
+      let activeType = 'all';
+      let activeDomain = 'all';
+      let searchTerm = '';
+      let showConnectedOnly = false;
+      let filteredNodeIds = new Set();
+      let filteredLinks = [];
+      
+      // domain list
+      let domains = new Set();
+      
+      // simulation object
+      let simulation = null;
+      let transform = d3.zoomIdentity;   // for pan/zoom
+      
+      // DOM elements
+      const forceStrengthSlider = document.getElementById('force-strength');
+      const linkDistanceSlider = document.getElementById('link-distance');
+      const gravitySlider = document.getElementById('gravity');
+      const alphaSpeedSlider = document.getElementById('alpha-speed');
+      const toggleSimBtn = document.getElementById('toggle-sim');
+      const resetLayoutBtn = document.getElementById('reset-layout');
+      const freezeBtn = document.getElementById('freeze-toggle');
+      const searchInput = document.getElementById('search-input');
+      const typeFilter = document.getElementById('type-filter');
+      const domainFilter = document.getElementById('domain-filter');
+      const applyFilterBtn = document.getElementById('apply-filter');
+      const showConnectedOnlyBtn = document.getElementById('show-connected-only');
+      const expandNeighborsBtn = document.getElementById('expand-neighbors');
+      const clearFilterBtn = document.getElementById('clear-filter');
+      const edgeStyleSelect = document.getElementById('edge-style');
+      const toggleEdgesBtn = document.getElementById('toggle-edges');
+      const toggleLabelsBtn = document.getElementById('toggle-labels');
+      
+      // analytics spans
+      const nodeCountSpan = document.getElementById('node-count');
+      const edgeCountSpan = document.getElementById('edge-count');
+      const mostConnectedSpan = document.getElementById('most-connected');
+      const isolatedCountSpan = document.getElementById('isolated-count');
+      const densitySpan = document.getElementById('density');
+      
+      // side panel
+      const sidePanel = document.getElementById('side-panel');
+      const panelToggle = document.getElementById('panel-toggle');
+      const closePanelBtn = document.getElementById('close-panel');
+      const nodeDetailDiv = document.getElementById('node-detail-content');
+      
+      // ----- helper: load notes from localStorage -----
+      function loadNotesFromStorage() {
+        let notes = JSON.parse(localStorage.getItem('noesis-notes') || '[]');
+        if (notes.length === 0) {
+          // demo data with various types, relations
+          notes = [
+            { id: "note-1", title: "What is Noesis?", markdown: "A system for thinking. [[Force-directed graphs]] [[Contradictions]]", links: ["note-2","note-3"], domain: "philosophy", type: "Idea", version: 2, relation: "supports" },
+            { id: "note-2", title: "Force-directed graphs", markdown: "Visualize connections. [[What is Noesis?]]", links: ["note-1"], domain: "tech", type: "Definition", version: 1, relation: "references" },
+            { id: "note-3", title: "Contradictions", markdown: "Signals of growth. They help refine ideas.", links: ["note-1"], domain: "philosophy", type: "Question", version: 1, relation: "contradicts" },
+            { id: "note-4", title: "Editor page", markdown: "Write ideas.", links: [], domain: "ui", type: "Idea", version: 1, relation: "references" },
+            { id: "note-5", title: "Graph theory", markdown: "Study of networks. [[Force-directed graphs]]", links: ["note-2"], domain: "math", type: "Definition", version: 1, relation: "extends" }
+          ];
+          localStorage.setItem('noesis-notes', JSON.stringify(notes));
+        }
+        return notes;
+      }
+      
+      // extract links from markdown [[...]]
+      function extractLinksFromMarkdown(markdown) {
+        const regex = /\[\[(.*?)\]\]/g;
+        let matches = [];
+        let m;
+        while ((m = regex.exec(markdown)) !== null) {
+          matches.push(m[1].trim());
+        }
+        return matches;
+      }
+      
+      function buildGraphFromNotes(notes) {
+        const nodeList = [];
+        const linkList = [];
+        const idToTitle = new Map();
+        const titleToId = new Map();
+        notes.forEach(n => {
+          idToTitle.set(n.id, n.title);
+          titleToId.set(n.title, n.id);
+        });
+        
+        notes.forEach(note => {
+          const node = {
+            id: note.id,
+            title: note.title,
+            type: note.type || "Idea",
+            domain: note.domain || "general",
+            connections: 0,
+            contentPreview: note.markdown?.slice(0, 120) || "",
+            versionCount: note.version || 1,
+            relation: note.relation || "references"
+          };
+          // combine explicit links and markdown links
+          const extracted = extractLinksFromMarkdown(note.markdown || "");
+          const allLinks = [...new Set([...(note.links || []), ...extracted])];
+          node.links = allLinks;
+          nodeList.push(node);
+          nodeMap.set(node.id, node);
+        });
+        
+        // build edges with relation types
+        nodeList.forEach(source => {
+          source.links.forEach(targetTitle => {
+            const targetId = titleToId.get(targetTitle);
+            if (targetId && targetId !== source.id) {
+              let relation = source.relation || "references";
+              // optional: can override per edge based on note properties
+              linkList.push({
+                source: source.id,
+                target: targetId,
+                type: relation,
+                strength: 1
+              });
+            }
+          });
+        });
+        
+        // compute degree
+        const degree = new Map();
+        linkList.forEach(l => {
+          degree.set(l.source, (degree.get(l.source)||0)+1);
+          degree.set(l.target, (degree.get(l.target)||0)+1);
+        });
+        nodeList.forEach(n => n.connections = degree.get(n.id) || 0);
+        
+        return { nodes: nodeList, links: linkList };
+      }
+      
+      // apply filters and rebuild filtered set
+      function updateFilteredGraph() {
+        let filtered = new Set(nodes.map(n => n.id));
+        if (activeType !== 'all') {
+          filtered = new Set(nodes.filter(n => n.type === activeType).map(n=>n.id));
+        }
+        if (activeDomain !== 'all') {
+          const domainNodes = nodes.filter(n => n.domain === activeDomain).map(n=>n.id);
+          filtered = new Set([...filtered].filter(id => domainNodes.includes(id)));
+        }
+        if (searchTerm.trim() !== '') {
+          const term = searchTerm.trim().toLowerCase();
+          const matched = nodes.filter(n => n.title.toLowerCase().includes(term)).map(n=>n.id);
+          filtered = new Set([...filtered].filter(id => matched.includes(id)));
+        }
+        if (showConnectedOnly && filtered.size > 0) {
+          // keep only nodes that have at least one edge inside filtered set
+          const relevantLinks = links.filter(l => filtered.has(l.source) && filtered.has(l.target));
+          const connectedIds = new Set();
+          relevantLinks.forEach(l => { connectedIds.add(l.source); connectedIds.add(l.target); });
+          filtered = connectedIds;
+        }
+        filteredNodeIds = filtered;
+        filteredLinks = links.filter(l => filteredNodeIds.has(l.source) && filteredNodeIds.has(l.target));
+        updateSimulationData();
+      }
+      
+      function updateSimulationData() {
+        const visibleNodes = nodes.filter(n => filteredNodeIds.has(n.id));
+        const visibleLinks = filteredLinks;
+        if (simulation) simulation.stop();
+        simulation = d3.forceSimulation(visibleNodes)
+          .force('link', d3.forceLink(visibleLinks).id(d => d.id).distance(Number(linkDistanceSlider.value)).strength(0.2))
+          .force('charge', d3.forceManyBody().strength(-Number(forceStrengthSlider.value)))
+          .force('center', d3.forceCenter(width/2, height/2).strength(Number(gravitySlider.value)))
+          .force('collision', d3.forceCollide().radius(28).strength(0.7))
+          .alphaDecay(1 - Number(alphaSpeedSlider.value))
+          .on('tick', () => drawCanvas());
+        
+        if (!simRunning) simulation.stop();
+        if (freezePositions) {
+          visibleNodes.forEach(n => { n.fx = n.x; n.fy = n.y; });
+        } else {
+          visibleNodes.forEach(n => { n.fx = null; n.fy = null; });
+        }
+        
+        // update analytics
+        nodeCountSpan.innerText = visibleNodes.length;
+        edgeCountSpan.innerText = visibleLinks.length;
+        let maxDegree = 0, maxNode = "—";
+        let isolated = 0;
+        visibleNodes.forEach(n => { if (n.connections > maxDegree) { maxDegree = n.connections; maxNode = n.title; } });
+        visibleNodes.forEach(n => { if (n.connections === 0) isolated++; });
+        mostConnectedSpan.innerText = maxNode !== "—" ? maxNode : "—";
+        isolatedCountSpan.innerText = isolated;
+        const nLen = visibleNodes.length;
+        const possible = nLen * (nLen-1) / 2;
+        const density = possible === 0 ? 0 : (visibleLinks.length / possible).toFixed(3);
+        densitySpan.innerText = density;
+      }
+      
+      // drawing with pan/zoom transform
+      function drawCanvas() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+        ctx.save();
+        ctx.translate(transform.x, transform.y);
+        ctx.scale(transform.k, transform.k);
+        
+        // background subtle grid
+        ctx.strokeStyle = "rgba(200,180,120,0.08)";
+        ctx.lineWidth = 0.5;
+        for (let i = -1000; i < width+1000; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(i, -1000);
+          ctx.lineTo(i, height+1000);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(-1000, i);
+          ctx.lineTo(width+1000, i);
+          ctx.stroke();
+        }
+        
+        // draw edges if visible
+        if (showEdges) {
+          filteredLinks.forEach(link => {
+            const sourceNode = nodes.find(n => n.id === link.source);
+            const targetNode = nodes.find(n => n.id === link.target);
+            if (!sourceNode || !targetNode) return;
+            if (!filteredNodeIds.has(sourceNode.id) || !filteredNodeIds.has(targetNode.id)) return;
+            ctx.beginPath();
+            ctx.moveTo(sourceNode.x, sourceNode.y);
+            ctx.lineTo(targetNode.x, targetNode.y);
+            
+            // set style based on relation type
+            let strokeColor = "rgba(200, 168, 120, 0.5)";
+            let dash = [];
+            if (edgeStyle === 'dashed') dash = [6, 4];
+            else if (edgeStyle === 'dotted') dash = [2, 4];
+            ctx.setLineDash(dash);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = link.strength || 1.2;
+            ctx.stroke();
+          });
+        }
+        ctx.setLineDash([]); // reset
+        
+        // draw nodes
+        nodes.filter(n => filteredNodeIds.has(n.id)).forEach(node => {
+          const isSelected = selectedNodeId === node.id;
+          const isHover = hoveredNodeId === node.id;
+          let color = "#B89A70";
+          if (node.type === "Question") color = "#8FBBCC";
+          else if (node.type === "Definition") color = "#C7A86B";
+          else color = "#DBC194";
+          const radius = 6 + Math.min(12, node.connections * 0.8);
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, radius, 0, 2*Math.PI);
+          ctx.fillStyle = color;
+          ctx.fill();
+          if (isSelected) {
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = "#E5CDA8";
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, radius+3, 0, 2*Math.PI);
+            ctx.strokeStyle = "#FFE9BB";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          } else if (isHover) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, radius+2, 0, 2*Math.PI);
+            ctx.strokeStyle = "#FADB9E";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+          if (showLabels) {
+            ctx.fillStyle = "#F5EFE2";
+            ctx.font = "12px 'Inter'";
+            ctx.fillText(node.title.length > 20 ? node.title.slice(0,18)+".." : node.title, node.x-25, node.y-12);
+          }
+        });
+        ctx.restore();
+      }
+      
+      // initialize simulation with data
+      function initSimulation() {
+        const notes = loadNotesFromStorage();
+        const { nodes: n, links: l } = buildGraphFromNotes(notes);
+        nodes = n;
+        links = l;
+        // initial random positions
+        nodes.forEach(n => { n.x = width/2 + (Math.random() - 0.5)*300; n.y = height/2 + (Math.random() - 0.5)*300; });
+        filteredNodeIds = new Set(nodes.map(n=>n.id));
+        filteredLinks = [...links];
+        domains.clear();
+        nodes.forEach(n => domains.add(n.domain));
+        domainFilter.innerHTML = '<option value="all">All</option>' + Array.from(domains).map(d => `<option value="${d}">${d}</option>`).join('');
+        updateSimulationData();
+      }
+      
+      function resetLayout() {
+        nodes.filter(n => filteredNodeIds.has(n.id)).forEach(n => {
+          n.x = width/2 + (Math.random() - 0.5)*300;
+          n.y = height/2 + (Math.random() - 0.5)*300;
+          n.fx = null; n.fy = null;
+        });
+        if (simulation) simulation.alpha(0.5).restart();
+        freezePositions = false;
+        freezeBtn.innerText = "❄️ Freeze";
+        drawCanvas();
+      }
+      
+      // expand neighbors of selected node (adds 1-hop neighbors to filtered set)
+      function expandNeighbors() {
+        if (!selectedNodeId) return;
+        const neighbors = new Set();
+        filteredLinks.forEach(l => {
+          if (l.source === selectedNodeId) neighbors.add(l.target);
+          if (l.target === selectedNodeId) neighbors.add(l.source);
+        });
+        neighbors.add(selectedNodeId);
+        const newFiltered = new Set([...filteredNodeIds, ...neighbors]);
+        filteredNodeIds = newFiltered;
+        filteredLinks = links.filter(l => filteredNodeIds.has(l.source) && filteredNodeIds.has(l.target));
+        updateSimulationData();
+      }
+      
+      // canvas interactions: click & hover
+      function handleCanvasClick(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left - transform.x) / transform.k;
+        const mouseY = (e.clientY - rect.top - transform.y) / transform.k;
+        let closest = null;
+        let minDist = 20;
+        nodes.filter(n => filteredNodeIds.has(n.id)).forEach(node => {
+          const dx = node.x - mouseX, dy = node.y - mouseY;
+          const dist = Math.hypot(dx,dy);
+          if (dist < minDist) { minDist = dist; closest = node; }
+        });
+        if (closest) {
+          selectedNodeId = closest.id;
+          updateNodeInspector(closest);
+          sidePanel.classList.remove('closed');
+          drawCanvas();
+        } else {
+          selectedNodeId = null;
+          sidePanel.classList.add('closed');
+          drawCanvas();
+        }
+      }
+      
+      function handleCanvasDoubleClick(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left - transform.x) / transform.k;
+        const mouseY = (e.clientY - rect.top - transform.y) / transform.k;
+        let closest = null;
+        let minDist = 20;
+        nodes.filter(n => filteredNodeIds.has(n.id)).forEach(node => {
+          const dx = node.x - mouseX, dy = node.y - mouseY;
+          const dist = Math.hypot(dx,dy);
+          if (dist < minDist) { minDist = dist; closest = node; }
+        });
+        if (closest) {
+          window.location.href = `editor.html?id=${closest.id}`;
+        }
+      }
+      
+      function onMouseMove(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left - transform.x) / transform.k;
+        const mouseY = (e.clientY - rect.top - transform.y) / transform.k;
+        let newHover = null;
+        nodes.filter(n => filteredNodeIds.has(n.id)).forEach(node => {
+          const dx = node.x - mouseX, dy = node.y - mouseY;
+          if (Math.hypot(dx,dy) < 16) newHover = node.id;
+        });
+        if (hoveredNodeId !== newHover) { hoveredNodeId = newHover; drawCanvas(); }
+      }
+      
+      function updateNodeInspector(node) {
+        const incoming = links.filter(l => l.target === node.id).map(l => nodes.find(n=>n.id===l.source)?.title).filter(Boolean);
+        const outgoing = links.filter(l => l.source === node.id).map(l => nodes.find(n=>n.id===l.target)?.title).filter(Boolean);
+        nodeDetailDiv.innerHTML = `
+          <div class="node-detail">
+            <strong>${node.title}</strong><br>
+            Type: ${node.type} | Domain: ${node.domain}<br>
+            Connections: ${node.connections} | Version: ${node.versionCount}<br>
+            <details><summary>Preview</summary>${node.contentPreview || "No content"}</details>
+            <hr>
+            <div><strong>Incoming (${incoming.length})</strong><div class="connection-list">${incoming.map(t=>`• ${t}`).join('<br>')||"—"}</div></div>
+            <div><strong>Outgoing (${outgoing.length})</strong><div class="connection-list">${outgoing.map(t=>`• ${t}`).join('<br>')||"—"}</div></div>
+            <button id="open-editor-btn" style="margin-top:8px;">✏️ Open in Editor</button>
+          </div>
+        `;
+        document.getElementById('open-editor-btn')?.addEventListener('click', () => {
+          window.location.href = `editor.html?id=${node.id}`;
+        });
+      }
+      
+      // resize canvas
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight - 130;
+        canvas.width = width;
+        canvas.height = height;
+        if (simulation) simulation.force('center', d3.forceCenter(width/2, height/2).strength(Number(gravitySlider.value)));
+        drawCanvas();
+      }
+      
+      // setup zoom & pan
+      function setupZoom() {
+        const zoom = d3.zoom().scaleExtent([0.3, 4]).on("zoom", (event) => {
+          transform = event.transform;
+          drawCanvas();
+        });
+        d3.select(canvas).call(zoom).on("dblclick.zoom", null);
+      }
+      
+      // event listeners
+      forceStrengthSlider.addEventListener('input', () => { if(simulation) simulation.force('charge').strength(-Number(forceStrengthSlider.value)); simulation.alpha(0.3).restart(); });
+      linkDistanceSlider.addEventListener('input', () => { if(simulation) simulation.force('link').distance(Number(linkDistanceSlider.value)); simulation.alpha(0.3).restart(); });
+      gravitySlider.addEventListener('input', () => { if(simulation) simulation.force('center').strength(Number(gravitySlider.value)); simulation.alpha(0.2).restart(); });
+      alphaSpeedSlider.addEventListener('input', () => { if(simulation) simulation.alphaDecay(1 - Number(alphaSpeedSlider.value)); });
+      toggleSimBtn.addEventListener('click', () => { simRunning = !simRunning; if(simRunning) simulation.alpha(0.3).restart(); else simulation.stop(); toggleSimBtn.innerText = simRunning ? "⏸️ Pause" : "▶️ Start"; });
+      resetLayoutBtn.addEventListener('click', resetLayout);
+      freezeBtn.addEventListener('click', () => { freezePositions = !freezePositions; nodes.forEach(n => { if(freezePositions && filteredNodeIds.has(n.id)) { n.fx = n.x; n.fy = n.y; } else { n.fx = null; n.fy = null; } }); freezeBtn.innerText = freezePositions ? "🔥 Unfreeze" : "❄️ Freeze"; if(!freezePositions && simRunning) simulation.alpha(0.5).restart(); });
+      applyFilterBtn.addEventListener('click', () => { activeType = typeFilter.value; activeDomain = domainFilter.value; searchTerm = searchInput.value; updateFilteredGraph(); });
+      showConnectedOnlyBtn.addEventListener('click', () => { showConnectedOnly = true; updateFilteredGraph(); });
+      expandNeighborsBtn.addEventListener('click', expandNeighbors);
+      clearFilterBtn.addEventListener('click', () => { activeType='all'; activeDomain='all'; searchTerm=''; showConnectedOnly=false; typeFilter.value='all'; domainFilter.value='all'; searchInput.value=''; updateFilteredGraph(); });
+      toggleEdgesBtn.addEventListener('click', () => { showEdges = !showEdges; toggleEdgesBtn.innerText = showEdges ? "Hide edges" : "Show edges"; drawCanvas(); });
+      toggleLabelsBtn.addEventListener('click', () => { showLabels = !showLabels; toggleLabelsBtn.innerText = showLabels ? "Hide labels" : "Show labels"; drawCanvas(); });
+      edgeStyleSelect.addEventListener('change', (e) => { edgeStyle = e.target.value; drawCanvas(); });
+      panelToggle.addEventListener('click', () => sidePanel.classList.toggle('closed'));
+      closePanelBtn.addEventListener('click', () => sidePanel.classList.add('closed'));
+      canvas.addEventListener('click', handleCanvasClick);
+      canvas.addEventListener('dblclick', handleCanvasDoubleClick);
+      canvas.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('resize', () => { resizeCanvas(); if(simulation) simulation.force('center').strength(Number(gravitySlider.value)); drawCanvas(); });
+      
+      initSimulation();
+      setupZoom();
+      resizeCanvas();
+      drawCanvas();
+      
+      // listen for storage changes from Editor
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'noesis-notes') {
+          initSimulation();
+        }
+      });
+    })();
+  </script>
+</body>
+        </html>
