@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOESIS · Creator · Anish Kushwaha</title>
+  <meta name="description" content="Anish Kushwaha — Student, Engineer, Cybersecurity Enthusiast. Creator of Noesis.">
+  <meta name="author" content="Anish Kushwaha">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0C0F14;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 170, 100, 0.05) 0px, transparent 20%),
+        radial-gradient(circle at 90% 70%, rgba(180, 150, 80, 0.04) 0px, transparent 25%),
+        linear-gradient(145deg, rgba(20, 25, 33, 0.3) 0%, rgba(8, 10, 14, 0.8) 100%);
+      color: #F0F3F7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 350;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      width: 50vw;
+      height: 50vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      top: -10vh;
+      left: -10vw;
+      background: radial-gradient(circle at center, rgba(200, 175, 100, 0.08), transparent 70%);
+    }
+    body::after {
+      bottom: -10vh;
+      right: -10vw;
+      background: radial-gradient(circle at center, rgba(140, 170, 200, 0.05), transparent 75%);
+    }
+
+    .page-container {
+      max-width: 1200px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* header identical to other pages */
+    .identity-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .identity-header h1 {
+      font-size: 4.2rem;
+      font-weight: 650;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3E9D2 60%, #D4B48C 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      line-height: 1;
+    }
+    .os-tagline {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #D8C9AA;
+      background: rgba(12, 16, 22, 0.6);
+      display: inline-block;
+      padding: 0.3rem 1.5rem;
+      border: 1px solid rgba(212, 180, 140, 0.3);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+    }
+
+    /* navigation */
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem 2rem;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.25);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      margin-bottom: 2rem;
+      background: rgba(8, 10, 14, 0.35);
+      backdrop-filter: blur(8px);
+    }
+    .nav-bottom {
+      margin-top: 2rem;
+      margin-bottom: 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.18);
+      border-bottom: none;
+      padding: 0.8rem 0;
+      background: transparent;
+      backdrop-filter: none;
+    }
+    nav a {
+      color: #E7DFD1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 550;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid transparent;
+      transition: 0.2s;
+    }
+    nav a:hover, nav a.active {
+      border-bottom-color: #D8B78C;
+      color: #FFF9EC;
+    }
+    .nav-bottom a {
+      font-size: 0.7rem;
+      letter-spacing: 2.5px;
+      color: #C9BCA5;
+    }
+
+    /* creator profile section */
+    .profile-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      margin-bottom: 2.5rem;
+      background: rgba(18, 22, 30, 0.5);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(200, 175, 120, 0.25);
+      padding: 2rem;
+    }
+    .photo-area {
+      flex: 0 0 180px;
+      text-align: center;
+    }
+    .photo-placeholder {
+      width: 180px;
+      height: 180px;
+      background: linear-gradient(135deg, #2A241C, #1A1E26);
+      border: 2px solid #C8A87C;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #D6C9B4;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      overflow: hidden;
+    }
+    .photo-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-note {
+      font-size: 0.7rem;
+      color: #AFA08A;
+      margin-top: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .bio-area {
+      flex: 1;
+    }
+    .bio-name {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      color: #F5EADB;
+      margin-bottom: 0.5rem;
+    }
+    .bio-titles {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #D6C9B4;
+      margin-bottom: 1rem;
+    }
+    .bio-quote {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: #EADCB8;
+      border-left: 3px solid #C4A079;
+      padding-left: 1rem;
+      margin: 1rem 0;
+    }
+    .bio-description {
+      font-size: 0.9rem;
+      color: #D6CFC2;
+      line-height: 1.6;
+    }
+
+    /* links grid */
+    .links-section {
+      margin-bottom: 2rem;
+    }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #EADCB8;
+      border-bottom: 1px solid rgba(200, 175, 120, 0.4);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .link-card {
+      background: rgba(10, 12, 18, 0.7);
+      border: 1px solid rgba(150, 125, 90, 0.5);
+      padding: 0.8rem 1rem;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .link-card:hover {
+      border-color: #C8A87C;
+      background: rgba(20, 24, 32, 0.9);
+      transform: translateX(4px);
+    }
+    .link-icon {
+      font-size: 1.4rem;
+      min-width: 32px;
+      text-align: center;
+    }
+    .link-info {
+      flex: 1;
+    }
+    .link-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #F5EADB;
+      letter-spacing: 1px;
+    }
+    .link-url {
+      font-size: 0.7rem;
+      color: #AFA08A;
+      word-break: break-all;
+    }
+    .link-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    /* email section */
+    .email-section {
+      background: rgba(18, 22, 30, 0.6);
+      border: 1px solid rgba(200, 175, 120, 0.3);
+      padding: 1.2rem;
+      margin-top: 1rem;
+    }
+    .email-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    .email-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(5, 7, 11, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      border: 1px solid rgba(200, 168, 120, 0.4);
+    }
+    .email-item a {
+      color: #EADCB8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+    .email-item a:hover {
+      color: #FFFAF0;
+      text-decoration: underline;
+    }
+
+    /* footer */
+    footer {
+      margin-top: 2rem;
+      padding: 1.5rem 0 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #AD9F8D;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      border-top: 1px solid rgba(180, 150, 110, 0.25);
+    }
+    .footer-quote {
+      font-size: 0.9rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+      color: #EADCB8;
+    }
+    @media (max-width: 700px) {
+      .profile-section { flex-direction: column; align-items: center; text-align: center; }
+      .bio-quote { text-align: left; }
+      .links-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-container">
+  <div class="identity-header">
+    <h1>NOESIS</h1>
+    <div class="os-tagline">A Personal Knowledge Operating System · Creator</div>
+  </div>
+
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html" class="active">CREATOR</a>
+  </nav>
+
+  <!-- Profile Section -->
+  <div class="profile-section">
+    <div class="photo-area">
+      <div class="photo-placeholder" id="photo-container">
+        <!-- Placeholder for Anish.png - replace with actual image -->
+        <img id="profile-photo" src="Anish.png" alt="Anish Kushwaha" onerror="this.style.display='none'; this.parentElement.innerHTML='📷<br>Anish.png<br>placeholder'; this.parentElement.style.flexDirection='column'; this.parentElement.style.textAlign='center';">
+      </div>
+      <div class="photo-note">ANISH · KUSHWAHA</div>
+    </div>
+    <div class="bio-area">
+      <div class="bio-name">ANISH KUSHWAHA</div>
+      <div class="bio-titles">Student • Engineer • Cybersecurity Enthusiast<br>Web Developer • Research-Oriented Thinker</div>
+      <div class="bio-quote">“I don’t follow the universe — I reprogram it.”</div>
+      <div class="bio-description">
+        Privacy-first principle: This portfolio and all associated projects (FocusRoom, Noesis, Vulnerability Scanner) respect user privacy — no tracking, no data collection. Everything runs locally where applicable.<br><br>
+        Creator's Vision: Anish Kushwaha builds tools that merge cybersecurity, deep focus, and futuristic interfaces. "M1887 is the most powerful weapon which you can use to change the game." — Every line of code is a step toward redefining digital ecosystems.<br><br>
+        Currently pursuing Matriculation with focus on Cybersecurity, Web Development, Penetration Testing, and Cosmology. Passionate about creating billion-dollar tech tools for students and researchers.
+      </div>
+    </div>
+  </div>
+
+  <!-- Links Grid: Portfolio + Developer Platforms -->
+  <div class="links-section">
+    <div class="section-title">🌐 Portfolio & Development</div>
+    <div class="links-grid">
+      <div class="link-card"><a href="https://Anish-kushwaha.online" target="_blank" rel="noopener noreferrer"><span class="link-icon">🌍</span><div class="link-info"><div class="link-name">Portfolio Website</div><div class="link-url">Anish-kushwaha.online</div></div></a></div>
+      <div class="link-card"><a href="https://github.com/Anish-Kushwaha" target="_blank" rel="noopener noreferrer"><span class="link-icon">🐙</span><div class="link-info"><div class="link-name">GitHub</div><div class="link-url">github.com/Anish-Kushwaha</div></div></a></div>
+      <div class="link-card"><a href="https://leetcode.com/Anish-Kushwaha" target="_blank" rel="noopener noreferrer"><span class="link-icon">⚡</span><div class="link-info"><div class="link-name">LeetCode</div><div class="link-url">leetcode.com/Anish-Kushwaha</div></div></a></div>
+      <div class="link-card"><a href="https://devpost.com/Anish-Kushwaha" target="_blank" rel="noopener noreferrer"><span class="link-icon">🏆</span><div class="link-info"><div class="link-name">Devpost</div><div class="link-url">devpost.com/Anish-Kushwaha</div></div></a></div>
+      <div class="link-card"><a href="https://www.hackerrank.com/profile/Anish_Kushwaha" target="_blank" rel="noopener noreferrer"><span class="link-icon">💻</span><div class="link-info"><div class="link-name">HackerRank</div><div class="link-url">hackerrank.com/Anish_Kushwaha</div></div></a></div>
+    </div>
+  </div>
+
+  <!-- Professional & Social -->
+  <div class="links-section">
+    <div class="section-title">🔗 Professional & Networking</div>
+    <div class="links-grid">
+      <div class="link-card"><a href="https://www.linkedin.com/in/anish-kushwaha-43a915383" target="_blank" rel="noopener noreferrer"><span class="link-icon">💼</span><div class="link-info"><div class="link-name">LinkedIn</div><div class="link-url">linkedin.com/in/anish-kushwaha</div></div></a></div>
+      <div class="link-card"><a href="https://x.com/Anish_Kushwaha_" target="_blank" rel="noopener noreferrer"><span class="link-icon">🐦</span><div class="link-info"><div class="link-name">X (Twitter)</div><div class="link-url">@Anish_Kushwaha_</div></div></a></div>
+      <div class="link-card"><a href="https://www.facebook.com/Anishkushwahaji2" target="_blank" rel="noopener noreferrer"><span class="link-icon">📘</span><div class="link-info"><div class="link-name">Facebook</div><div class="link-url">facebook.com/Anishkushwahaji2</div></div></a></div>
+      <div class="link-card"><a href="https://t.me/AnishKushwahaji" target="_blank" rel="noopener noreferrer"><span class="link-icon">📱</span><div class="link-info"><div class="link-name">Telegram</div><div class="link-url">t.me/AnishKushwahaji</div></div></a></div>
+      <div class="link-card"><a href="https://www.youtube.com/@cosmologist_anish" target="_blank" rel="noopener noreferrer"><span class="link-icon">🎬</span><div class="link-info"><div class="link-name">YouTube</div><div class="link-url">@cosmologist_anish</div></div></a></div>
+      <div class="link-card"><a href="https://www.chess.com/member/Anish-Kushwaha" target="_blank" rel="noopener noreferrer"><span class="link-icon">♟️</span><div class="link-info"><div class="link-name">Chess.com</div><div class="link-url">Anish-Kushwaha</div></div></a></div>
+    </div>
+  </div>
+
+  <!-- Email Section -->
+  <div class="email-section">
+    <div style="text-align: center; margin-bottom: 1rem;" class="section-title" style="border-bottom: none;">📮 Reach me</div>
+    <div class="email-row">
+      <div class="email-item"><span>📧</span><a href="mailto:Anish-Kushwaha@zohomail.in">Anish-Kushwaha@zohomail.in</a><span class="link-url" style="margin-left: 0.3rem;">(Primary)</span></div>
+      <div class="email-item"><span>🔐</span><a href="mailto:Anish_Kushwaha@proton.me">Anish_Kushwaha@proton.me</a><span class="link-url" style="margin-left: 0.3rem;">(Confidential)</span></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="nav-bottom">
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+
+  <!-- Footer with quote -->
+  <footer>
+    <div class="footer-quote">“I don’t follow the universe — I reprogram it.”</div>
+    <div>© 2026 Anish Kushwaha • All rights reserved</div>
+    <div style="margin-top: 0.3rem; letter-spacing: 4px;">⚚Ⓐ⚚</div>
+  </footer>
+</div>
+
+<script>
+  // Optional: ensure photo fallback works if Anish.png is not present
+  (function() {
+    const img = document.getElementById('profile-photo');
+    if (img) {
+      img.onerror = function() {
+        const container = document.getElementById('photo-container');
+        if (container) {
+          container.innerHTML = '📷<br>ANISH<br>.png';
+          container.style.flexDirection = 'column';
+          container.style.justifyContent = 'center';
+          container.style.textAlign = 'center';
+          container.style.fontSize = '0.8rem';
+          container.style.background = 'linear-gradient(135deg, #2A241C, #1A1E26)';
+        }
+      };
+    }
+  })();
+</script>
+</body>
+</html>
