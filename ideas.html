@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOESIS · Ideas · knowledge library</title>
+  <meta name="description" content="Browse all your ideas, questions, and definitions — the evolving network of thought.">
+  <meta name="author" content="Anish kushwaha">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0C0F14;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 170, 100, 0.05) 0px, transparent 20%),
+        radial-gradient(circle at 90% 70%, rgba(180, 150, 80, 0.04) 0px, transparent 25%),
+        linear-gradient(145deg, rgba(20, 25, 33, 0.3) 0%, rgba(8, 10, 14, 0.8) 100%);
+      color: #F0F3F7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 350;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      width: 50vw;
+      height: 50vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      top: -10vh;
+      left: -10vw;
+      background: radial-gradient(circle at center, rgba(200, 175, 100, 0.08), transparent 70%);
+    }
+    body::after {
+      bottom: -10vh;
+      right: -10vw;
+      background: radial-gradient(circle at center, rgba(140, 170, 200, 0.05), transparent 75%);
+    }
+
+    .page-container {
+      max-width: 1400px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* header identical to home */
+    .identity-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .identity-header h1 {
+      font-size: 4.2rem;
+      font-weight: 650;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F3E9D2 60%, #D4B48C 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      line-height: 1;
+    }
+    .os-tagline {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #D8C9AA;
+      background: rgba(12, 16, 22, 0.6);
+      display: inline-block;
+      padding: 0.3rem 1.5rem;
+      border: 1px solid rgba(212, 180, 140, 0.3);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+    }
+
+    /* navigation */
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.3rem 2rem;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.25);
+      border-bottom: 1px solid rgba(212, 180, 140, 0.2);
+      margin-bottom: 2rem;
+      background: rgba(8, 10, 14, 0.35);
+      backdrop-filter: blur(8px);
+    }
+    .nav-bottom {
+      margin-top: 2rem;
+      margin-bottom: 0;
+      border-top: 1px solid rgba(212, 180, 140, 0.18);
+      border-bottom: none;
+      padding: 0.8rem 0;
+      background: transparent;
+      backdrop-filter: none;
+    }
+    nav a {
+      color: #E7DFD1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 550;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid transparent;
+      transition: 0.2s;
+    }
+    nav a:hover, nav a.active {
+      border-bottom-color: #D8B78C;
+      color: #FFF9EC;
+    }
+    .nav-bottom a {
+      font-size: 0.7rem;
+      letter-spacing: 2.5px;
+      color: #C9BCA5;
+    }
+
+    /* controls bar */
+    .controls-bar {
+      background: rgba(18, 22, 30, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(200, 175, 120, 0.25);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      flex: 2;
+      align-items: center;
+    }
+    .search-box {
+      background: rgba(5, 7, 11, 0.9);
+      border: 1px solid rgba(150, 125, 90, 0.6);
+      color: #F5EEE3;
+      padding: 0.5rem 0.8rem;
+      min-width: 200px;
+      flex: 1;
+    }
+    .filter-select {
+      background: rgba(5, 7, 11, 0.9);
+      border: 1px solid rgba(150, 125, 90, 0.6);
+      color: #F5EEE3;
+      padding: 0.5rem 0.8rem;
+    }
+    .sort-select {
+      background: rgba(5, 7, 11, 0.9);
+      border: 1px solid rgba(150, 125, 90, 0.6);
+      color: #F5EEE3;
+      padding: 0.5rem 0.8rem;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-gold {
+      background: transparent;
+      border: 1px solid #C8A87C;
+      color: #FEF2DF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-gold:hover {
+      background: rgba(200, 168, 120, 0.1);
+      border-color: #E5CDA8;
+    }
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #D6C9B4;
+    }
+    .stats-badge {
+      background: rgba(10, 12, 16, 0.8);
+      border: 1px solid rgba(200, 175, 120, 0.4);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    /* note grid */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    .note-card {
+      background: rgba(18, 22, 30, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(200, 175, 120, 0.25);
+      padding: 1.2rem;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .note-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(200, 175, 120, 0.6);
+      background: rgba(22, 28, 38, 0.7);
+    }
+    .note-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #F5EADB;
+      border-left: 3px solid #C4A079;
+      padding-left: 0.6rem;
+    }
+    .note-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #CBB89D;
+    }
+    .meta-tag {
+      background: rgba(0,0,0,0.4);
+      padding: 0.1rem 0.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(200, 168, 120, 0.3);
+    }
+    .note-preview {
+      font-size: 0.85rem;
+      color: #D6CFC2;
+      line-height: 1.4;
+      max-height: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .note-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #B8A98E;
+      border-top: 1px solid rgba(200, 175, 120, 0.2);
+      padding-top: 0.5rem;
+      margin-top: 0.2rem;
+    }
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #C8A87C;
+      cursor: pointer;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.6;
+      transition: 0.2s;
+    }
+    .delete-btn:hover {
+      opacity: 1;
+      color: #ff8a5c;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: rgba(18, 22, 30, 0.4);
+      border: 1px dashed rgba(200, 175, 120, 0.4);
+      color: #B8A98E;
+    }
+
+    footer {
+      margin-top: 2rem;
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #AD9F8D;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      border-top: 1px solid rgba(180, 150, 110, 0.25);
+    }
+    @media (max-width: 700px) {
+      .controls-bar { flex-direction: column; align-items: stretch; }
+      .search-filter { flex-direction: column; }
+      .stats-row { justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-container">
+  <div class="identity-header">
+    <h1>NOESIS</h1>
+    <div class="os-tagline">A Personal Knowledge Operating System · Ideas</div>
+  </div>
+
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html" class="active">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+
+  <div class="controls-bar">
+    <div class="search-filter">
+      <input type="text" id="search-input" class="search-box" placeholder="Search by title or content...">
+      <select id="type-filter" class="filter-select">
+        <option value="all">All types</option>
+        <option value="idea">Idea</option>
+        <option value="question">Question</option>
+        <option value="definition">Definition</option>
+      </select>
+      <select id="domain-filter" class="filter-select">
+        <option value="all">All domains</option>
+      </select>
+      <select id="sort-select" class="sort-select">
+        <option value="updated">Recently modified</option>
+        <option value="created">Recently created</option>
+        <option value="title">Title A–Z</option>
+        <option value="links">Most linked</option>
+      </select>
+    </div>
+    <div class="action-buttons">
+      <button id="new-note-btn" class="btn-gold">+ New note</button>
+      <button id="refresh-btn" class="btn-gold">⟳ Refresh</button>
+    </div>
+    <div class="stats-row" id="stats-row">
+      <span class="stats-badge" id="total-notes">0 notes</span>
+      <span class="stats-badge" id="total-links">0 links</span>
+      <span class="stats-badge" id="top-domain">—</span>
+    </div>
+  </div>
+
+  <div id="notes-container" class="notes-grid">
+    <!-- notes will appear here -->
+    <div class="empty-state">Loading your knowledge network...</div>
+  </div>
+
+  <nav class="nav-bottom">
+    <a href="index.html">HOME</a>
+    <a href="editor.html">WRITE</a>
+    <a href="graph.html">GRAPH</a>
+    <a href="ideas.html">IDEAS</a>
+    <a href="creator.html">CREATOR</a>
+  </nav>
+  <footer>
+    <span>© 2026 Anish Kushwaha · Noesis — a laboratory for thought</span>
+  </footer>
+</div>
+
+<script>
+  (function() {
+    const STORAGE_NOTES = "noesis-notes";
+    let notes = [];
+    let filteredNotes = [];
+
+    // DOM elements
+    const container = document.getElementById("notes-container");
+    const searchInput = document.getElementById("search-input");
+    const typeFilter = document.getElementById("type-filter");
+    const domainFilter = document.getElementById("domain-filter");
+    const sortSelect = document.getElementById("sort-select");
+    const newNoteBtn = document.getElementById("new-note-btn");
+    const refreshBtn = document.getElementById("refresh-btn");
+    const totalNotesSpan = document.getElementById("total-notes");
+    const totalLinksSpan = document.getElementById("total-links");
+    const topDomainSpan = document.getElementById("top-domain");
+
+    // Helper: extract links from markdown ([[...]] and markdown links)
+    function countLinks(markdown) {
+      const bracketLinks = (markdown.match(/\[\[(.*?)\]\]/g) || []).length;
+      const mdLinks = (markdown.match(/\[.*?\]\(.*?\)/g) || []).length;
+      return bracketLinks + mdLinks;
+    }
+
+    // Load notes from localStorage
+    function loadNotes() {
+      const stored = localStorage.getItem(STORAGE_NOTES);
+      if (stored) {
+        try {
+          notes = JSON.parse(stored);
+        } catch(e) { notes = []; }
+      } else {
+        // demo data
+        notes = [
+          { id: "note-1", title: "What is Noesis?", markdown: "A system for thinking. [[Force-directed graphs]] [[Contradictions]]", type: "idea", domain: "philosophy", tags: ["core"], createdAt: "2025-03-01T10:00:00Z", updatedAt: "2025-03-15T12:00:00Z", revisions: 2 },
+          { id: "note-2", title: "Force-directed graphs", markdown: "Visualize connections. [[What is Noesis?]]", type: "definition", domain: "technology", tags: ["graph"], createdAt: "2025-03-02T10:00:00Z", updatedAt: "2025-03-10T09:00:00Z", revisions: 1 },
+          { id: "note-3", title: "Contradictions", markdown: "Signals of growth. They help refine ideas.", type: "question", domain: "philosophy", tags: ["growth"], createdAt: "2025-03-05T10:00:00Z", updatedAt: "2025-03-05T10:00:00Z", revisions: 1 },
+          { id: "note-4", title: "Editor page", markdown: "Write ideas.", type: "idea", domain: "ui", tags: ["tool"], createdAt: "2025-03-07T10:00:00Z", updatedAt: "2025-03-07T10:00:00Z", revisions: 1 },
+          { id: "note-5", title: "Graph theory", markdown: "Study of networks. [[Force-directed graphs]]", type: "definition", domain: "math", tags: ["theory"], createdAt: "2025-03-08T10:00:00Z", updatedAt: "2025-03-08T10:00:00Z", revisions: 1 }
+        ];
+        localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
+      }
+      // ensure each note has link count field for sorting
+      notes = notes.map(n => ({
+        ...n,
+        linkCount: countLinks(n.markdown || "")
+      }));
+      // populate domain filter options
+      const domains = [...new Set(notes.map(n => n.domain).filter(d => d))];
+      domainFilter.innerHTML = '<option value="all">All domains</option>' +
+        domains.map(d => `<option value="${d}">${d}</option>`).join('');
+      applyFiltersAndRender();
+    }
+
+    // filter and sort notes
+    function applyFiltersAndRender() {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      const type = typeFilter.value;
+      const domain = domainFilter.value;
+      let filtered = notes.filter(note => {
+        if (type !== "all" && note.type !== type) return false;
+        if (domain !== "all" && note.domain !== domain) return false;
+        if (searchTerm) {
+          return note.title.toLowerCase().includes(searchTerm) ||
+                 (note.markdown || "").toLowerCase().includes(searchTerm);
+        }
+        return true;
+      });
+
+      // sort
+      const sortBy = sortSelect.value;
+      if (sortBy === "updated") {
+        filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      } else if (sortBy === "created") {
+        filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortBy === "title") {
+        filtered.sort((a,b) => a.title.localeCompare(b.title));
+      } else if (sortBy === "links") {
+        filtered.sort((a,b) => (b.linkCount || 0) - (a.linkCount || 0));
+      }
+      filteredNotes = filtered;
+      renderNotes();
+
+      // update stats
+      const total = notes.length;
+      const totalLinks = notes.reduce((sum, n) => sum + (n.linkCount || 0), 0);
+      const domainCounts = notes.reduce((acc, n) => {
+        acc[n.domain] = (acc[n.domain] || 0) + 1;
+        return acc;
+      }, {});
+      let topDomain = Object.keys(domainCounts).reduce((a,b) => domainCounts[a] > domainCounts[b] ? a : b, "—");
+      totalNotesSpan.textContent = `${total} note${total !== 1 ? 's' : ''}`;
+      totalLinksSpan.textContent = `${totalLinks} link${totalLinks !== 1 ? 's' : ''}`;
+      topDomainSpan.textContent = topDomain !== "—" ? `Top: ${topDomain}` : "—";
+    }
+
+    // render notes to grid
+    function renderNotes() {
+      if (filteredNotes.length === 0) {
+        container.innerHTML = '<div class="empty-state">No notes match your filters. Create your first idea!</div>';
+        return;
+      }
+      container.innerHTML = filteredNotes.map(note => `
+        <div class="note-card" data-id="${note.id}">
+          <div class="note-title">${escapeHtml(note.title || "Untitled")}</div>
+          <div class="note-meta">
+            <span class="meta-tag">${note.type}</span>
+            <span class="meta-tag">${note.domain}</span>
+            ${(note.tags || []).slice(0,2).map(tag => `<span class="meta-tag">#${escapeHtml(tag)}</span>`).join('')}
+            <span class="meta-tag">📅 ${new Date(note.updatedAt).toLocaleDateString()}</span>
+          </div>
+          <div class="note-preview">${escapeHtml((note.markdown || "").slice(0, 120))}${(note.markdown || "").length > 120 ? '…' : ''}</div>
+          <div class="note-stats">
+            <span>🔗 ${note.linkCount || 0} links</span>
+            <span>📝 v${note.revisions || 1}</span>
+            <button class="delete-btn" data-id="${note.id}" onclick="event.stopPropagation(); deleteNote('${note.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+
+      // attach click event to each card (open in editor)
+      document.querySelectorAll('.note-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.classList.contains('delete-btn')) return;
+          const id = card.dataset.id;
+          window.location.href = `editor.html?id=${id}`;
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+      });
+    }
+
+    function deleteNote(id) {
+      if (confirm("Permanently delete this note? This action cannot be undone.")) {
+        notes = notes.filter(n => n.id !== id);
+        localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
+        applyFiltersAndRender();
+      }
+    }
+
+    function refresh() {
+      loadNotes();
+    }
+
+    function newNote() {
+      window.location.href = "editor.html";
+    }
+
+    // event listeners
+    searchInput.addEventListener('input', applyFiltersAndRender);
+    typeFilter.addEventListener('change', applyFiltersAndRender);
+    domainFilter.addEventListener('change', applyFiltersAndRender);
+    sortSelect.addEventListener('change', applyFiltersAndRender);
+    newNoteBtn.addEventListener('click', newNote);
+    refreshBtn.addEventListener('click', refresh);
+
+    // initial load
+    loadNotes();
+
+    // optional: listen for changes from other tabs (storage event)
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_NOTES) {
+        refresh();
+      }
+    });
+  })();
+</script>
+</body>
+  </html>
